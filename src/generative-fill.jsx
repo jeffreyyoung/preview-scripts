@@ -91,10 +91,10 @@ function App() {
       maskCtx.closePath();
       maskCtx.fill();
 
-      // Convert canvases to blobs
+      // Convert canvases to blobs, then to File objects
       Promise.all([
-        new Promise(resolve => canvas.toBlob(resolve)),
-        new Promise(resolve => maskCanvas.toBlob(resolve))
+        new Promise(resolve => canvas.toBlob(blob => resolve(new File([blob], 'image.png', { type: 'image/png' })))),
+        new Promise(resolve => maskCanvas.toBlob(blob => resolve(new File([blob], 'mask.png', { type: 'image/png' }))))
       ]).then(([uploadedFile, blackAndWhiteMaskFile]) => {
         window.Poe.sendMessage(state.prompt, { attachments: [uploadedFile, blackAndWhiteMaskFile] });
       });
