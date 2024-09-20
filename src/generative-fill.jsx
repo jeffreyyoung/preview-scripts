@@ -92,9 +92,9 @@ function App() {
         const maskCtx = maskCanvas.getContext('2d');
 
         // Draw the mask
-        maskCtx.fillStyle = 'white';
-        maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
         maskCtx.fillStyle = 'black';
+        maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+        maskCtx.fillStyle = 'white';
         maskCtx.beginPath();
         maskCtx.moveTo(state.selectedArea[0].x, state.selectedArea[0].y);
         state.selectedArea.forEach((point) => maskCtx.lineTo(point.x, point.y));
