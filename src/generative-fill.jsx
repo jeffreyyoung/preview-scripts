@@ -96,7 +96,7 @@ function App() {
         new Promise(resolve => canvas.toBlob(resolve)),
         new Promise(resolve => maskCanvas.toBlob(resolve))
       ]).then(([uploadedFile, blackAndWhiteMaskFile]) => {
-        window.Poe.sendMessage(state.prompt, [uploadedFile, blackAndWhiteMaskFile]);
+        window.Poe.sendMessage(state.prompt, { attachments: [uploadedFile, blackAndWhiteMaskFile] });
       });
     }
   };
