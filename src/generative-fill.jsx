@@ -73,31 +73,43 @@ function App() {
   const handleSubmit = () => {
     if (state.selectedArea && state.prompt) {
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
 
-      // Create a new canvas for the mask
-      const maskCanvas = document.createElement('canvas');
-      maskCanvas.width = canvas.width;
-      maskCanvas.height = canvas.height;
-      const maskCtx = maskCanvas.getContext('2d');
+      // Create a new canvas for the original image
+      const originalCanvas = document.createElement('canvas');
+      originalCanvas.width = canvas.width;
+      originalCanvas.height = canvas.height;
+      const originalCtx = originalCanvas.getContext('2d');
 
-      // Draw the mask
-      maskCtx.fillStyle = 'black';
-      maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
-      maskCtx.fillStyle = 'white';
-      maskCtx.beginPath();
-      maskCtx.moveTo(state.selectedArea[0].x, state.selectedArea[0].y);
-      state.selectedArea.forEach((point) => maskCtx.lineTo(point.x, point.y));
-      maskCtx.closePath();
-      maskCtx.fill();
+      // Draw the original image without any drawings
+      const img = new Image();
+      img.onload = () => {
+        originalCtx.drawImage(img, 0, 0, originalCanvas.width, originalCanvas.height);
 
-      // Convert canvases to blobs, then to File objects
-      Promise.all([
-        new Promise(resolve => canvas.toBlob(blob => resolve(new File([blob], 'image.png', { type: 'image/png' })))),
-        new Promise(resolve => maskCanvas.toBlob(blob => resolve(new File([blob], 'mask.png', { type: 'image/png' }))))
-      ]).then(([uploadedFile, blackAndWhiteMaskFile]) => {
-        window.Poe.sendMessage(state.prompt, { attachments: [uploadedFile, blackAndWhiteMaskFile] });
-      });
+        // Create a new canvas for the mask
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = canvas.width;
+        maskCanvas.height = canvas.height;
+        const maskCtx = maskCanvas.getContext('2d');
+
+        // Draw the mask
+        maskCtx.fillStyle = 'white';
+        maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+        maskCtx.fillStyle = 'black';
+        maskCtx.beginPath();
+        maskCtx.moveTo(state.selectedArea[0].x, state.selectedArea[0].y);
+        state.selectedArea.forEach((point) => maskCtx.lineTo(point.x, point.y));
+        maskCtx.closePath();
+        maskCtx.fill();
+
+        // Convert canvases to blobs, then to File objects
+        Promise.all([
+          new Promise(resolve => originalCanvas.toBlob(blob => resolve(new File([blob], 'image.png', { type: 'image/png' })))),
+          new Promise(resolve => maskCanvas.toBlob(blob => resolve(new File([blob], 'mask.png', { type: 'image/png' }))))
+        ]).then(([uploadedFile, blackAndWhiteMaskFile]) => {
+          window.Poe.sendMessage(state.prompt, { attachments: [uploadedFile, blackAndWhiteMaskFile] });
+        });
+      };
+      img.src = URL.createObjectURL(state.file);
     }
   };
 
