@@ -24529,10 +24529,18 @@
       ctx.lineWidth = 2;
       ctx.lineCap = "round";
       ctx.strokeStyle = "black";
-      ctx.lineTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+      let clientX, clientY;
+      if (e.type.startsWith("touch")) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      ctx.lineTo((clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY);
       ctx.stroke();
       ctx.beginPath();
-      ctx.moveTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+      ctx.moveTo((clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY);
     };
     const stopDrawing = () => {
       setIsDrawing(false);
@@ -24563,6 +24571,12 @@
         flex-direction: column;
         align-items: center;
         padding: 20px;
+      }
+      #root {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
       }
       #canvasContainer {
         width: 100%;
@@ -24596,6 +24610,20 @@
         document.head.removeChild(picoCSS);
       };
     }, []);
+    (0, import_react.useEffect)(() => {
+      const canvas = canvasRef.current;
+      const preventDefault = (e) => e.preventDefault();
+      canvas.addEventListener("touchstart", preventDefault);
+      canvas.addEventListener("touchmove", preventDefault);
+      canvas.addEventListener("touchend", preventDefault);
+      canvas.addEventListener("touchcancel", preventDefault);
+      return () => {
+        canvas.removeEventListener("touchstart", preventDefault);
+        canvas.removeEventListener("touchmove", preventDefault);
+        canvas.removeEventListener("touchend", preventDefault);
+        canvas.removeEventListener("touchcancel", preventDefault);
+      };
+    }, []);
     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "Scribble to drawing" }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { id: "canvasContainer", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -24605,7 +24633,11 @@
           onMouseDown: startDrawing,
           onMouseMove: draw,
           onMouseUp: stopDrawing,
-          onMouseOut: stopDrawing
+          onMouseOut: stopDrawing,
+          onTouchStart: startDrawing,
+          onTouchMove: draw,
+          onTouchEnd: stopDrawing,
+          onTouchCancel: stopDrawing
         }
       ) }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { id: "controls", children: [

@@ -48,10 +48,20 @@ const DrawingApp = () => {
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.strokeStyle = 'black';
-    ctx.lineTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+
+    let clientX, clientY;
+    if (e.type.startsWith('touch')) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    ctx.lineTo((clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+    ctx.moveTo((clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY);
   };
 
   const stopDrawing = () => {
@@ -89,6 +99,12 @@ const DrawingApp = () => {
         align-items: center;
         padding: 20px;
       }
+      #root {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+      }
       #canvasContainer {
         width: 100%;
         max-width: 400px;
@@ -124,6 +140,22 @@ const DrawingApp = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const preventDefault = (e) => e.preventDefault();
+    canvas.addEventListener('touchstart', preventDefault);
+    canvas.addEventListener('touchmove', preventDefault);
+    canvas.addEventListener('touchend', preventDefault);
+    canvas.addEventListener('touchcancel', preventDefault);
+
+    return () => {
+      canvas.removeEventListener('touchstart', preventDefault);
+      canvas.removeEventListener('touchmove', preventDefault);
+      canvas.removeEventListener('touchend', preventDefault);
+      canvas.removeEventListener('touchcancel', preventDefault);
+    };
+  }, []);
+
   return (
     <>
       <h3>Scribble to drawing</h3>
@@ -134,6 +166,10 @@ const DrawingApp = () => {
           onMouseMove={draw}
           onMouseUp={stopDrawing}
           onMouseOut={stopDrawing}
+          onTouchStart={startDrawing}
+          onTouchMove={draw}
+          onTouchEnd={stopDrawing}
+          onTouchCancel={stopDrawing}
         />
       </div>
       <div id="controls">
