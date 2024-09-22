@@ -1,0 +1,3 @@
+flappy-bird.js - https://cdn.jsdelivr.net/gh/jeffreyyoung/preview-scripts@308829c1bab348602a3089f2634a2eb72094999e/dist/flappy-bird.js
+generative-fill.js - https://cdn.jsdelivr.net/gh/jeffreyyoung/preview-scripts@308829c1bab348602a3089f2634a2eb72094999e/dist/generative-fill.js
+scribble-to-drawing.js - https://cdn.jsdelivr.net/gh/jeffreyyoung/preview-scripts@308829c1bab348602a3089f2634a2eb72094999e/dist/scribble-to-drawing.js
