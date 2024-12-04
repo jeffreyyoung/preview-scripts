@@ -85,7 +85,7 @@ const DrawingApp = () => {
       .then(res => res.blob())
       .then(blob => {
         const file = new File([blob], 'drawing.png', { type: 'image/png' });
-        window.Poe.sendMessage("@scribbleToDrawing " + description, { attachments: [file] });
+        window.Poe.sendUserMessage("@scribbleToDrawing " + description, { attachments: [file] });
       });
   };
 
